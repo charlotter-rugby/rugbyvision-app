@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RugbyVision 7s | Elite Analyst</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 20px; background: #0f172a; color: white; max-width: 600px; margin: 0 auto; }
+        input, textarea, button { width: 100%; margin-bottom: 15px; padding: 12px; border-radius: 6px; box-sizing: border-box; border: 1px solid #334155; background: #1e293b; color: white; }
+        button { background: #10b981; color: white; font-weight: bold; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+        button:hover { background: #059669; }
+        #result { background: #1e293b; padding: 15px; border-radius: 6px; margin-top: 20px; white-space: pre-wrap; font-size: 14px; display: none; }
+        .help-text { font-size: 12px; color: #94a3b8; margin-top: -10px; margin-bottom: 15px; display: block; }
+    </style>
+</head>
+<body>
+    <h2 style="color: #10b981; margin-bottom: 5px;">RugbyVision 7s</h2>
+    <p style="margin-top: 0; color: #94a3b8; font-size: 14px;">Automated Video Performance Dossier</p>
+
+    <input type="text" id="videoLink" placeholder="Paste YouTube Link Here">
+    
+    <textarea id="roster" rows="5" placeholder="Enter Target Roster (e.g., 13 | Charlotte Ducote | Fly Half | Yellow Cleats)"></textarea>
+    <span class="help-text">Format: Number | Name | Position | Visual Marker</span>
+
+    <button onclick="runAnalysis()" id="analyzeBtn">Run Tape Analysis</button>
+    <div id="status" style="color: #34d399; font-weight: bold; text-align: center; margin-top: 10px;"></div>
+    <div id="result"></div>
+
+    <script>
+        async function runAnalysis() {
+            const btn = document.getElementById('analyzeBtn');
+            const status = document.getElementById('status');
+            const resultDiv = document.getElementById('result');
+            
+            btn.disabled = true;
+            btn.style.background = "#334155";
+            status.innerText = "Analyzing video and tracking players... (This takes 60-90 seconds)";
+            resultDiv.style.display = "none";
+            resultDiv.innerText = "";
+            
+            try {
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        videoUrl: document.getElementById('videoLink').value,
+                        targetPlayers: document.getElementById('roster').value
+                    })
+                });
+                
+                const data = await response.json();
+                status.innerText = "";
+                resultDiv.style.display = "block";
+                resultDiv.innerText = data.output || data.error;
+            } catch (error) {
+                status.innerText = "";
+                resultDiv.style.display = "block";
+                resultDiv.innerText = "Error connecting to the analysis engine. Please try again.";
+            } finally {
+                btn.disabled = false;
+                btn.style.background = "#10b981";
+            }
+        }
+    </script>
+</body>
+</html>
