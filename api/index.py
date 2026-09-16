@@ -15,8 +15,7 @@ class handler(BaseHTTPRequestHandler):
 
             # Authenticate with Google Gemini
             genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
-            model = genai.GenerativeModel('gemini-2.5-flash') # Using the fast video model
-
+            model = genai.GenerativeModel('gemini-3.6-flash') # Using the fast video model
             # Your exact Master System Prompt
             system_prompt = f"""
             You are RugbyVision 7s, an elite Rugby Sevens video performance analyst and scout. Your job is to process uploaded match footage or YouTube links, track designated players, and deliver an objective, timestamped statistical performance report.
